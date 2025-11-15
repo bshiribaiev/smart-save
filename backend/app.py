@@ -80,7 +80,7 @@ async def create_transaction(user_id: int, transaction: Transaction):
 
 @app.get("/transactions/{user_id}")
 async def get_transactions(user_id: int, limit: int = 50):
-    """Get all transactions for a user"""
+
     data = supabase.table("transactions").select("*").eq(
         "student_id", user_id
     ).order("createdat", desc=True).limit(limit).execute()
@@ -88,7 +88,7 @@ async def get_transactions(user_id: int, limit: int = 50):
 
 @app.get("/transactions/{user_id}/category/{category}")
 async def get_transactions_by_category(user_id: int, category: str):
-    """Get transactions filtered by category"""
+
     data = supabase.table("transactions").select("*").eq(
         "student_id", user_id
     ).eq("category", category).order("createdat", desc=True).execute()

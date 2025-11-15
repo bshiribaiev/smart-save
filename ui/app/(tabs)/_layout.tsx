@@ -14,7 +14,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
+        tabBarButton: HapticTab
       }}>
       <Tabs.Screen
         name="index"
@@ -42,6 +42,13 @@ export default function TabLayout() {
         options={{
           title: 'Leaderboard',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="trophy.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          title: 'Tips',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="lightbulb" color={color} />,
         }}
       />
     </Tabs>

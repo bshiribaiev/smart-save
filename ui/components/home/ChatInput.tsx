@@ -33,8 +33,9 @@ export function ChatInput() {
                     style={({ pressed }) => [
                         styles.sendButton,
                         (!value.trim() || pressed) && styles.sendButtonDisabled,
+                        pressed && value.trim() && styles.sendButtonPressed,
                     ]}>
-                    <Ionicons name="arrow-up-circle" size={22} color="#ffffff" />
+                    <Ionicons name="arrow-up" size={20} color="#ffffff" />
                 </Pressable>
             </View>
         </ThemedView>
@@ -69,7 +70,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     sendButtonDisabled: {
-        backgroundColor: '#9ca3af',
+        backgroundColor: '#e5e7eb',
+    },
+    sendButtonPressed: {
+        backgroundColor: '#4338ca',
     },
 });
 

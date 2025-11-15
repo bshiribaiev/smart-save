@@ -41,9 +41,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   chatInputWrapper: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingTop: 8,
-    paddingBottom: 12,
+    paddingBottom: 4,
   },
   screen: {
     gap: 12,

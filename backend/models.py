@@ -18,6 +18,15 @@ class Transaction(BaseModel):
     fraudflag: Optional[bool] = False
     fraudreason: Optional[str] = None
 
+
+class Transaction(BaseModel):
+    amount: float
+    average_amount: float  
+    recent_count: int     
+    created_at: str        
+
+
+
 class SpendingStatus(BaseModel):
     category: str
     period: str

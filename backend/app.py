@@ -95,6 +95,32 @@ async def get_transactions_by_category(user_id: int, category: str):
     ).eq("category", category).order("createdat", desc=True).execute()
     return data.data
 
+@app.post("/fraud-check")
+def fraud_check(tx: Transaction):
+    score = 0
+    reasons = []
+
+    if tx.amount > tx.average_amount * 3:
+        score += 40
+        reasons.append("Unusually large amount")
+
+    if tx.recent_count > 5:
+        score += 40
+        reasons.append("Many transactions in last 10 minutes")
+
+    hour = datetime.fromisoformat(tx.created_at.replace("Z", "")).hour
+    if 1 <= hour <= 5:
+        score += 20
+        reasons.append("Unusual overnight transaction")
+
+    fraud_flag = score > 70
+
+    return {
+        "fraud_flag": fraud_flag,
+        "risk_score": score,
+        "reasons": reasons,
+    }
+
 #budget endpoints
 @app.post("/budgets/")
 async def create_budget(user_id: int, budget: Budget):

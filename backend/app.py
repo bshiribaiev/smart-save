@@ -6,6 +6,7 @@ from supabase import create_client, Client
 from pydantic import BaseModel
 import os 
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 from models import *
 
 load_dotenv()
@@ -95,3 +96,100 @@ async def get_transactions_by_category(user_id: int, category: str):
     return data.data
 
 #budget endpoints
+@app.post("/budgets/")
+async def create_budget(user_id: int, budget: Budget):
+
+    existing = supabase.table("budgets").select("*").eq(
+        "user_id", user_id
+    ).eq("category", budget.category).eq("period", budget.period).execute()
+
+    if existing.data:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Budget already exists for {budget.category} ({budget.period})"
+        )
+    
+    data = supabase.table("budgets").insert({
+        "user_id": user_id,
+        "category": budget.category,
+        "period": budget.period,
+        "limit_amount": budget.limit_amount
+    }).execute()
+    return data.data
+
+@app.get("/budgets/{user_id}")
+async def get_budgets(user_id: int):
+
+    data = supabase.table("budgets").select("*").eq("user_id", user_id).execute()
+    return data.data
+
+@app.put("/budgets/{budget_id}")
+async def update_budget(budget_id: int, limit_amount: float):
+
+    data = supabase.table("budgets").update({
+        "limit_amount": limit_amount
+    }).eq("id", budget_id).execute()
+    return data.data
+
+@app.delete("/budgets/{budget_id}")
+async def delete_budget(budget_id: int):
+
+    data = supabase.table("budgets").delete().eq("id", budget_id).execute()
+    return {"message": "Budget deleted successfully"}
+
+#expense tracking endpoints 
+@app.get("/spending-tracker/{user_id}")
+async def get_spending_tracker(user_id: int):
+
+    budgets_response = supabase.table("budgets").select("*").eq("user_id", user_id).execute()
+    budgets = budgets_response.data
+
+    if not budgets:
+        return {"user_id": user_id, "budgets": [], "message": "No budgets found"}
+    
+    spending_statuses = []
+
+    for budget in budgets:
+
+        now = datetime.now()
+
+        if budget['period'] == 'weekly':
+            start_date = (now - timedelta(days=now.weekday())).date()
+        else:
+            start_date = now.replace(day=1).date()
+
+        transactions_response = supabase.table("transactions"). select("amount").eq(
+            "student_id", user_id
+        ).eq(
+            "category", budget['category']
+        ).gte(
+            "createdat", start_date.isoformat()
+        ).execute()
+
+        spent = sum(float(t['amount']) for t in transactions_response.data)
+        budget_limit = float(budget['limit_amount'])
+        remaining = budget_limit - spent
+        percentage_used = (spent / budget_limit * 100) if budget_limit > 0 else 0
+
+        if percentage_used >= 100:
+            status = "over"
+        elif percentage_used >= 80:
+            status = "near"
+        else:
+            status = "under"
+
+        spending_statuses.append({
+            "budget_id": budget['id'],
+            "category": budget['category'],
+            "period": budget['period'],
+            "budget_limit": budget_limit,
+            "spent": round(spent, 2),
+            "remaining": round(remaining, 2),
+            "percentage_used": round(percentage_used, 2),
+            "status": status
+        })
+
+        return {
+            "user_id": user_id,
+            "budgets": spending_statuses
+        }

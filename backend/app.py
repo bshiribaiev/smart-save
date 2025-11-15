@@ -96,7 +96,7 @@ async def get_transactions_by_category(user_id: int, category: str):
     return data.data
 
 @app.post("/fraud-check")
-def fraud_check(tx: Transaction):
+async def fraud_check(tx: Transaction):
     score = 0
     reasons = []
 

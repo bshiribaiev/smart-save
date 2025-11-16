@@ -85,26 +85,28 @@ export default function AIScreen() {
 
   return (
     <ThemedView style={styles.root}>
-      <ParallaxScrollView>
-        <ThemedView style={styles.screen}>
-          {messages.map((msg) => {
-            const isAI = msg.role === 'ai';
-            const bubbleStyle = isAI ? styles.chatBubbleAI : styles.chatBubbleUser;
-            const labelStyle = isAI ? styles.chatLabelAI : styles.chatLabelUser;
-            const textStyle = isAI ? styles.chatTextAI : styles.chatTextUser;
+      <SafeAreaView style={styles.topSafeArea} edges={['top']}>
+        <ParallaxScrollView>
+          <ThemedView style={styles.screen}>
+            {messages.map((msg) => {
+              const isAI = msg.role === 'ai';
+              const bubbleStyle = isAI ? styles.chatBubbleAI : styles.chatBubbleUser;
+              const labelStyle = isAI ? styles.chatLabelAI : styles.chatLabelUser;
+              const textStyle = isAI ? styles.chatTextAI : styles.chatTextUser;
 
-            return (
-              <View key={msg.id} style={bubbleStyle}>
-                <ThemedText style={labelStyle}>
-                  {isAI ? 'AI' : 'You'}
-                </ThemedText>
-                <ThemedText style={textStyle}>{msg.text}</ThemedText>
-              </View>
-            );
-          })}
-          <View style={{ height: 16 }} />
-        </ThemedView>
-      </ParallaxScrollView>
+              return (
+                <View key={msg.id} style={bubbleStyle}>
+                  <ThemedText style={labelStyle}>
+                    {isAI ? 'AI' : 'You'}
+                  </ThemedText>
+                  <ThemedText style={textStyle}>{msg.text}</ThemedText>
+                </View>
+              );
+            })}
+            <View style={{ height: 16 }} />
+          </ThemedView>
+        </ParallaxScrollView>
+      </SafeAreaView>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -128,6 +130,9 @@ export default function AIScreen() {
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+  },
+  topSafeArea: {
     flex: 1,
   },
   safeArea: {

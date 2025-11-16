@@ -73,7 +73,7 @@ export default function LeaderboardScreen() {
 
   useEffect(() => {
     // Fetch student data
-    fetch('http://127.00.0.1:8000/students/')
+    fetch('http://[YOUR_IP]/students/')
       .then(response => response.json())
       .then(setStudentData)
       .catch(console.error);

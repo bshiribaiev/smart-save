@@ -4,7 +4,7 @@ College students juggle tight budgets, social lives, and campus expenses without
 
 ## What it does
 
-![App walkthrough](walkthough.gif)
+![App walkthrough](walkthrough.gif)
 
 SmartSave Campus is a mobile app that helps students **spend smarter on campus**:
 

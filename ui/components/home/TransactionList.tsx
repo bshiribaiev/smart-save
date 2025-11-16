@@ -85,9 +85,17 @@ function mapApiTransactions(apiTxs?: any[] | null): UiTransaction[] {
     if (!apiTxs || !apiTxs.length) return [];
 
     return apiTxs.map((t, idx) => {
-        const amount = Number(t.amount ?? 0);
+        const rawAmount = Number(t.amount ?? 0);
         const merchant = (t.merchant ?? '').toString() || 'Transaction';
         const category = (t.category ?? '').toString() || 'general';
+        const catLower = category.toLowerCase();
+
+        // For display purposes:
+        //  - Top ups show as positive inflows
+        //  - Everything else (peer transfers, spending, moves to savings) show as
+        //    negative amounts from the student's perspective.
+        const displayAmount =
+            catLower === 'top-up' ? Math.abs(rawAmount) : -Math.abs(rawAmount);
 
         const created = t.createdat ?? t.created_at;
         const when = created ? new Date(created) : null;
@@ -108,7 +116,7 @@ function mapApiTransactions(apiTxs?: any[] | null): UiTransaction[] {
             id: Number(t.id ?? idx),
             name: merchant,
             subtitle: subtitleParts.join(' · '),
-            amount,
+            amount: displayAmount,
             icon,
             color,
         };

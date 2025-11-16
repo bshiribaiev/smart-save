@@ -22,12 +22,17 @@ import { QuickActions } from '@/components/home/QuickActions';
 import { TransactionList } from '@/components/home/TransactionList';
 import { BudgetPlanning } from '@/components/home/BudgetPlanning';
 import { ChatInput } from '@/components/home/ChatInput';
+import { SendMoneyModal } from '../../ui-design/SendMoneyModal';
+import { TopUpWalletModal } from '../../ui-design/TopUpWalletModal';
+
+type Recipient = { id: string; name: string };
 
 export default function HomeScreen() {
   const [showSendModal, setShowSendModal] = useState(false);
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [amount, setAmount] = useState('');
+  const [recipient, setRecipient] = useState<Recipient | null>(null);
 
   // For the hackathon demo we use the seeded student with id = 6.
   const STUDENT_ID = 6;
@@ -80,7 +85,10 @@ export default function HomeScreen() {
     }
   };
 
-  const handleConfirm = async (type: 'Send' | 'Top Up' | 'Save') => {
+  const handleConfirm = async (
+    type: 'Send' | 'Top Up' | 'Save',
+    recipientInfo?: Recipient,
+  ) => {
     if (!amount.trim()) {
       Alert.alert('Enter amount', 'Please enter an amount first.');
       return;
@@ -98,7 +106,9 @@ export default function HomeScreen() {
               : 'save-to-savings',
         merchant:
           type === 'Send'
-            ? 'Student transfer'
+            ? recipientInfo
+              ? `Transfer to ${recipientInfo.name} (${recipientInfo.id})`
+              : 'Student transfer'
             : type === 'Top Up'
               ? 'Campus top up'
               : 'Savings transfer',
@@ -110,9 +120,10 @@ export default function HomeScreen() {
 
       Alert.alert(
         `${type} created`,
-        `${type} of $${numericAmount.toFixed(2)} recorded (demo backend).`,
+        `${type} of $${numericAmount.toFixed(2)} recorded.`,
       );
       setAmount('');
+      setRecipient(null);
       setShowSendModal(false);
       setShowTopUpModal(false);
       setShowSaveModal(false);
@@ -146,74 +157,25 @@ export default function HomeScreen() {
         </ThemedView>
       </ParallaxScrollView>
 
-      {/* Simple demo modals for Send and Top Up */}
-      <Modal
-        transparent
-        animationType="slide"
+      {/* Send Money modal (visual design lives in ui/ui-design/SendMoneyModal.tsx) */}
+      <SendMoneyModal
         visible={showSendModal}
-        onRequestClose={() => setShowSendModal(false)}>
-        <View style={styles.modalBackdrop}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-            keyboardVerticalOffset={0}>
-            <ThemedView style={styles.modalCard}>
-              <WalletHeader />
-              <ThemedText type="subtitle">Send money</ThemedText>
-              <TextInput
-                style={styles.amountInput}
-                placeholder="$0.00"
-                keyboardType="numeric"
-                value={amount}
-                onChangeText={setAmount}
-              />
-              <View style={styles.modalButtons}>
-                <Pressable onPress={() => setShowSendModal(false)} style={styles.secondaryButton}>
-                  <ThemedText>Cancel</ThemedText>
-                </Pressable>
-                <Pressable onPress={() => handleConfirm('Send')} style={styles.primaryButton}>
-                  <ThemedText lightColor="#ffffff" darkColor="#ffffff">
-                    Confirm
-                  </ThemedText>
-                </Pressable>
-              </View>
-            </ThemedView>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
+        amount={amount}
+        onAmountChange={setAmount}
+        onClose={() => setShowSendModal(false)}
+        onSend={(recip) => handleConfirm('Send', recip)}
+      />
 
-      <Modal
-        transparent
-        animationType="slide"
+      {/* Top Up Wallet modal (visual design lives in ui/ui-design/TopUpWalletModal.tsx) */}
+      <TopUpWalletModal
         visible={showTopUpModal}
-        onRequestClose={() => setShowTopUpModal(false)}>
-        <View style={styles.modalBackdrop}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-            keyboardVerticalOffset={0}>
-            <ThemedView style={styles.modalCard}>
-              <WalletHeader />
-              <ThemedText type="subtitle">Top up wallet</ThemedText>
-              <TextInput
-                style={styles.amountInput}
-                placeholder="$0.00"
-                keyboardType="numeric"
-                value={amount}
-                onChangeText={setAmount}
-              />
-              <View style={styles.modalButtons}>
-                <Pressable onPress={() => setShowTopUpModal(false)} style={styles.secondaryButton}>
-                  <ThemedText>Cancel</ThemedText>
-                </Pressable>
-                <Pressable onPress={() => handleConfirm('Top Up')} style={styles.primaryButton}>
-                  <ThemedText lightColor="#ffffff" darkColor="#ffffff">
-                    Confirm
-                  </ThemedText>
-                </Pressable>
-              </View>
-            </ThemedView>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
+        amount={amount}
+        onAmountChange={setAmount}
+        onClose={() => setShowTopUpModal(false)}
+        onConfirm={() => handleConfirm('Top Up')}
+      />
+
+      {/* Simple demo modal for Save */}
 
       <Modal
         transparent

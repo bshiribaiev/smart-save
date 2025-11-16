@@ -4,7 +4,7 @@ College students juggle tight budgets, social lives, and campus expenses without
 
 ## What it does
 
-![App walkthrough](walkthrough.gif)
+<img src="walkthrough.gif" width="300" alt="App walkthrough" />
 
 SmartSave Campus is a mobile app that helps students **spend smarter on campus**:
 
@@ -52,7 +52,7 @@ Main app tabs:
 - **Good UX beats complexity**: Simple, well-designed views for spending and budgets matter more than advanced financial features in a hackathon setting.
 - **Team workflow**: We improved at splitting frontend, backend, and AI work while keeping API contracts and design consistent.
 
-## What's next for Student First
+## What's next for SmartSave
 
 - **Richer budgeting**: Add recurring bills, savings goals, and alerts when you’re close to overspending in a category.
 - **Deeper campus integrations**: Pull in real campus data like dining dollars, print quotas, and event tickets (with university APIs where possible).
